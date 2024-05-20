@@ -1,21 +1,20 @@
 <template>
   <div class="post-container">
-    <!-- Используем компонент LoadingIndicator -->
-    <LoadingIndicator :loading="loading" />
-
     <div v-if="!loading">
       <div v-if="editMode">
         <textarea
           v-model="editPost.title"
           ref="editTitle"
           @input="adjustTextareaHeight('editTitle')"
-          class="edit-title">
+          class="edit-title"
+        >
         </textarea>
         <textarea
           v-model="editPost.body"
           ref="editBody"
           @input="adjustTextareaHeight('editBody')"
-          class="edit-body">
+          class="edit-body"
+        >
         </textarea>
       </div>
       <div v-else>
@@ -24,12 +23,14 @@
       </div>
       <p class="post-user">User: {{ getUser(post.userId) }}</p>
       <div class="buttons">
-        <button @click="toggleEditMode" class="btn edit-btn">{{ editMode ? 'Cancel' : 'Edit' }}</button>
-        <button v-if="editMode" @click="savePost" class="btn save-btn">Save</button>
+        <button @click="toggleEditMode" class="btn edit-btn">
+          {{ editMode ? "Cancel" : "Edit" }}
+        </button>
+        <button v-if="editMode" @click="savePost" class="btn save-btn">
+          Save
+        </button>
       </div>
     </div>
-
-    <!-- Оставляем блок loading-indicator здесь, чтобы он был поверх всех элементов -->
     <div v-if="loading" class="loading-indicator">Loading...</div>
   </div>
 </template>
@@ -40,8 +41,8 @@ export default {
     return {
       editMode: false,
       editPost: {
-        title: '',
-        body: '',
+        title: "",
+        body: "",
       },
       loading: false,
     };
@@ -64,29 +65,34 @@ export default {
       if (this.editMode) {
         this.editPost = { ...this.post };
         this.$nextTick(() => {
-          this.adjustTextareaHeight('editTitle');
-          this.adjustTextareaHeight('editBody');
+          this.adjustTextareaHeight("editTitle");
+          this.adjustTextareaHeight("editBody");
         });
       }
     },
     async savePost() {
-      this.loading = true;
-      const updatedPost = {
-        ...this.post,
-        title: this.editPost.title,
-        body: this.editPost.body,
-      };
-      try {
-        await this.$store.dispatch('updatePost', updatedPost);
-        this.editMode = false;
-      } finally {
-        this.loading = false;
-      }
-    },
+  this.loading = true;
+  const updatedPost = {
+    ...this.post,
+    title: this.editPost.title,
+    body: this.editPost.body,
+  };
+  try {
+    console.log('Отправка запроса на обновление поста:', updatedPost);
+    await this.$store.dispatch("updatePost", updatedPost);
+    console.log('Пост успешно обновлен');
+    this.editMode = false;
+  } catch (error) {
+    console.error('Ошибка при сохранении поста:', error);
+  } finally {
+    this.loading = false;
+  }
+}
+,
     adjustTextareaHeight(refName) {
       const textarea = this.$refs[refName];
       if (textarea) {
-        textarea.style.height = 'auto';
+        textarea.style.height = "auto";
         textarea.style.height = `${textarea.scrollHeight}px`;
       }
     },
@@ -97,11 +103,11 @@ export default {
         this.editPost = { ...newPost };
       }
     },
-    '$route.params.id': {
+    "$route.params.id": {
       immediate: true,
       async handler() {
         this.loading = true;
-        await this.$store.dispatch('fetchPost', this.$route.params.id);
+        await this.$store.dispatch("fetchPost", this.$route.params.id);
         this.editPost = { ...this.post };
         this.loading = false;
       },
@@ -110,8 +116,8 @@ export default {
   async created() {
     this.loading = true;
     try {
-      await this.$store.dispatch('fetchUsers');
-      await this.$store.dispatch('fetchPost', this.$route.params.id);
+      await this.$store.dispatch("fetchUsers");
+      await this.$store.dispatch("fetchPost", this.$route.params.id);
       this.editPost = { ...this.post };
     } finally {
       this.loading = false;

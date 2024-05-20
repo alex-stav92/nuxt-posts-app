@@ -40,15 +40,12 @@ export const mutations = {
 export const actions = {
   async setSelectedUser({ commit }, userId) {
     commit("SET_SELECTED_USER", userId);
-    console.log('Selected User set to:', userId);
   },
   async setStart({ commit }, start) {
     commit("SET_START", start);
-    console.log('Start set to:', start);
   },
   async fetchPosts({ commit }, { limit = 20, start = 0, userId = null } = {}) {
     try {
-      console.log('start', start);
       const url = userId
         ? `/posts?_limit=${limit}&_start=${start}&userId=${userId}`
         : `/posts?_limit=${limit}&_start=${start}`;
@@ -76,12 +73,11 @@ export const actions = {
   },
   async updatePost({ commit }, post) {
     try {
-      console.log('Отправка запроса на обновление поста:', post);
       const { data } = await this.$axios.patch(`/posts/${post.id}`, post);
       commit('UPDATE_POST', data);
-      console.log('Пост успешно обновлен:', data);
     } catch (error) {
       console.error('Ошибка при обновлении поста:', error);
+      throw error;
     }
   }
 
