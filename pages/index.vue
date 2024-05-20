@@ -81,8 +81,8 @@ export default {
     this.loading = true;
     if (!this.users.length) {
       await this.$store.dispatch("fetchUsers");
+      await this.fetchPosts();
     }
-    await this.fetchPosts();
     this.loading = false;
   },
 };
